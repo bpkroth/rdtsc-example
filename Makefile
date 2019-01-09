@@ -1,12 +1,16 @@
 CC=gcc
-CFLAGS=-O -Wall 
+CFLAGS=-O -Wall
 
-all: clean
-	@make rdtsc
+.PHONY: all
+all: clean rdtsc
 
-rdtsc: a.o b.o
-	@${CC} *.o -o rdtsc 
+#rdtsc: a.o b.o
+#	@${CC} ${CFLAGS} *.o -o rdtsc
 
+rdtsc: rdtsc.c
+	@${CC} ${CFLAGS} rdtsc.c -o rdtsc
+
+.PHONY: clean
 clean:
-	@rm -rf *.o
-	@rm -rf rdtsc
+	@rm -f *.o
+	@rm -f rdtsc
