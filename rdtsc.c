@@ -16,16 +16,15 @@
 #include <stdio.h>
 
 // optional wrapper if you don't want to just use __rdtsc() everywhere
-inline
-unsigned long long readTSC() {
+inline unsigned long long readTSC(unsigned int *tsc_aux_msr_ptr)
+{
 	// use the cpuid instruction as an (expensive) fence to prevent CPU reordering
 	// lfence can also be used in some cases
-	//__cpuid(); // apparently this is only in MS land
-	_mm_lfence();
-	unsigned int tsc_aux_msr_ptr;  // don't care about this value for now
-	unsigned long long tsc = __rdtscp(&tsc_aux_msr_ptr);
-	//__cpuid();
-	_mm_lfence();
+	////__cpuid(); // apparently this is only in MS land
+	//_mm_lfence();
+	unsigned long long tsc = __rdtscp(tsc_aux_msr_ptr);
+	////__cpuid();
+	//_mm_lfence();
 	return tsc;
 }
 
@@ -40,6 +39,8 @@ Use taskset or other tools to adjust the CPU affinity of the program to pin it t
 		return 1;
 	}
 
-	printf("%llu\n", readTSC());
+	unsigned int tsc_aux_msr_ptr;
+	unsigned long long tsc = readTSC(&tsc_aux_msr_ptr);
+	printf("cpu %02u tsc %llu\n", tsc_aux_msr_ptr, tsc);
 	return 0;
 }
